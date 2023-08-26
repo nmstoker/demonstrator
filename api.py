@@ -1,25 +1,25 @@
 from flask import Flask, request, jsonify
+from keybert import KeyBERT
 
 app = Flask(__name__)
+kw_model = KeyBERT()
 
 @app.route('/process', methods=['POST'])
 def process_text():
-    print("process_text started")
     try:
         # Get the input parameter 'text' from the JSON request
         data = request.get_json()
-        print("here...")
         input_text = data.get('text', '')
-        print("now here...")
 
         # Perform some processing on the input text (you can replace this with your actual processing logic)
-        processed_text = input_text.upper()
-        print(f"{processed_text=}")
+        #processed_text = input_text.upper()
+        keywords = kw_model.extract_keywords(input_text, keyphrase_ngram_range=(1, 2), stop_words="english")
+        #keywords = [f"{kw[0]} ({kw[1]})" for  kw in keywords]
 
         # Create a response JSON
         response = {
             'input_text': input_text,
-            'processed_text': processed_text
+            'keywords': keywords
         }
 
         return jsonify(response), 200

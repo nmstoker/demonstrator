@@ -5,8 +5,19 @@
     <title>Result</title>
 </head>
 <body>
-    <h2>API Result:</h2>
-    <p>{{ result }}</p>
+    <a href="/">Go Back</a>
+    <br>
+    <h2>API Response</h2>
+    <h3>Keywords</h3>
+    <ul>
+    {% for keyword in result.keywords %}
+        <li>{{ keyword[0] }} <span style="color: grey;">({{ keyword[1] }})</span></li>
+    {% endfor %}
+    </ul>
+    <h3>Input</h3>
+    <p><strong>Title:</strong> {{ title }}</p>
+    <p><strong>Input Type:</strong> {{ source_type }}</p>
+    <p><strong>Input Text:</strong> {{ result.input_text|truncate(length=400, killwords=False, end='...') }}</p>
     <br>
     <a href="/">Go Back</a>
 </body>

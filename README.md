@@ -12,7 +12,7 @@ python app.py
 
 ## API
 - initial config
-conda create -n demonstrator_api python=3.11
+conda create -n demonstrator_api python=3.10
 conda activate demonstrator_api
 pip install Flask
 
@@ -23,3 +23,5 @@ python api.py
 http://127.0.0.1:5001/process
 
 - now we'll adapt it to do something useful with the API
+
+pip install keybert
