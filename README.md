@@ -7,8 +7,11 @@ A simple text processing demonstrator that can process text either from a PDF or
 - initial config
 
 conda create -n demonstrator_application python=3.10
+
 conda activate demonstrator_application
+
 pip install Flask requests pdfplumber playwright
+
 playwright install chromium
 
 python app.py
@@ -18,7 +21,9 @@ python app.py
 - initial config
 
 conda create -n demonstrator_api python=3.10
+
 conda activate demonstrator_api
+
 pip install Flask
 
 python api.py
