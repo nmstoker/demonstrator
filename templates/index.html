@@ -1,19 +1,45 @@
  <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href='static/main.css' />
-    <title>Text Extractor</title>
+
+    <title>Text Processing Demonstrator</title>
 </head>
-<body>
-    <h1>Demonstrator</h1>
-    <form action="/" method="post" enctype="multipart/form-data">
-        <input type="url" name="url" placeholder="Enter URL to scrape" size="60">
-        <br><br>
-        or select a file to upload
-        <br><br>
-        <input type="file" name="file" accept=".pdf">
-        <br><br><br>
-        <input type="submit" class="button-main" role="button" value="Extract and Process">
-    </form>
+
+<body class="bg-light">
+    
+    <div class="container">
+        <main>
+            <h2 class="display-5">Text Processing Demonstrator</h2>
+            <br>
+            <p class="lead">This simple text processing demonstrator takes input from two sources: either a <mark>web page</mark> or a <mark>PDF file</mark>.</p>
+            <p class="lead">If a web page URL is submitted, it is scraped on demand using <a href="https://playwright.dev/python/">Playwright</a> to extract the text.</p>
+            <p class="lead">If a PDF file is submitted then <a href="https://github.com/jsvine/pdfplumber">PDF Plumber</a> is used to extract the text.</p>
+            <p class="lead">Once submitted, the text is processed using <a href="https://maartengr.github.io/KeyBERT/">KeyBERT</a>, which processes it to establish the most representative keywords, shown on the following page.</p>
+            <br>
+            <form action="/" method="post" enctype="multipart/form-data">
+                <hr class="my-4">
+                <label for="url" class="form-label">URL to scrape</label>
+                <input class="shadow-none form-control" type="url" name="url" placeholder="Enter URL to scrape" size="60">
+                <br>
+                <hr class="my-4">
+                <em>or...</em><br>
+                <hr class="my-4">
+                Select a file to upload
+                <br><br>
+                <input type="file" name="file" accept=".pdf">
+                <br><br>
+                <hr class="my-4">
+                <br>
+                <br>
+                <input type="submit" class="w-100 btn btn-secondary btn-lg" role="button" value="Extract and Process">
+            </form>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        </main>
+    </div>
 </body>
 </html>
