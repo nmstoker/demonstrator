@@ -7,38 +7,151 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href='static/main.css' />
 
-    <title>Text Processing Demonstrator</title>
+    <title>Text Processing Demonstrator: Summariser</title>
 </head>
 
 <body class="bg-light">
     
     <div class="container">
         <main>
-            <h2 class="display-5">Text Processing Demonstrator</h2>
+            <h2 class="display-5">Text Processing Demonstrator: Summariser</h2>
             <br>
-            <p class="lead">This simple text processing demonstrator takes input from two sources: either a <mark>web page</mark> or a <mark>PDF file</mark>.</p>
+            <p class="lead">This simple text processing demonstrator takes input from three possible sources:</p>
+            <p class="lead">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;from a <mark>web page</mark>, a <mark>PDF file</mark> or as <mark>free text</mark> manually entered.</p>
             <p class="lead">If a web page URL is submitted, it is scraped on demand using <a href="https://playwright.dev/python/">Playwright</a> to extract the text.</p>
             <p class="lead">If a PDF file is submitted then <a href="https://github.com/jsvine/pdfplumber">PDF Plumber</a> is used to extract the text.</p>
-            <p class="lead">Once submitted, the text is processed using <a href="https://maartengr.github.io/KeyBERT/">KeyBERT</a>, which processes it to establish the most representative keywords, shown on the following page.</p>
+            <p class="lead">Once submitted, the text is processed using <a href="https://huggingface.co/facebook/bart-large-cnn">bart-large-cnn</a>, which processes it to produce a summary, shown on the following page.</p>
             <br>
             <form action="/" method="post" enctype="multipart/form-data">
                 <hr class="my-4">
-                <label for="url" class="form-label">URL to scrape</label>
-                <input class="shadow-none form-control" type="url" name="url" placeholder="Enter URL to scrape" size="60">
+                <label for="url" class="form-label"><strong>URL to scrape</strong></label>
+                <input class="shadow-none form-control" id="url" type="url" name="url" placeholder="Enter URL to scrape" size="60">
+                <hr class="my-4">
+                <em>or...</em><br>
+                <hr class="my-4">
+                <strong>Select a file to upload</strong>
+                <br><br>
+                <input type="file" name="file" accept=".pdf">
                 <br>
                 <hr class="my-4">
                 <em>or...</em><br>
                 <hr class="my-4">
-                Select a file to upload
-                <br><br>
-                <input type="file" name="file" accept=".pdf">
-                <br><br>
+                <label for="freetext" class="form-label"><strong>Free text manually submitted</strong></label>
+                <textarea class="freetext" name="freetext" rows="5" placeholder="Enter some free text here..."></textarea>
+                <br>
                 <hr class="my-4">
                 <br>
+                <p><strong>Summary length</strong></p>
+                <div class="range_container">
+                    <div class="sliders_control">
+                        <input id="fromSlider" type="range" value="100" min="40" max="400"/>
+                        <input id="toSlider" type="range" value="300" min="40" max="400"/>
+                    </div>
+                    <div class="form_control">
+                        <div class="form_control_container">
+                            <div class="form_control_container_label">Minimum length</div>
+                            <input class="form_control_container_input" type="number" name="fromInput" id="fromInput" value="100" min="40" max="400"/>
+                        </div>
+                        <div class="form_control_container">
+                            <div class="form_control_container_label">Maximum length</div>
+                            <input class="form_control_container_input" type="number" name="toInput" id="toInput" value="300" min="40" max="400"/>
+                        </div>
+                    </div>
+                </div>
                 <br>
                 <input type="submit" class="w-100 btn btn-secondary btn-lg" role="button" value="Extract and Process">
             </form>
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+            <script>
+                function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+                    const [from, to] = getParsed(fromInput, toInput);
+                    fillSlider(fromInput, toInput, '#C6C6C6', '#408cfc', controlSlider);
+                    if (from > to) {
+                        fromSlider.value = to;
+                        fromInput.value = to;
+                    } else {
+                        fromSlider.value = from;
+                    }
+                }
+
+                function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+                    const [from, to] = getParsed(fromInput, toInput);
+                    fillSlider(fromInput, toInput, '#C6C6C6', '#408cfc', controlSlider);
+                    setToggleAccessible(toInput);
+                    if (from <= to) {
+                        toSlider.value = to;
+                        toInput.value = to;
+                    } else {
+                        toInput.value = from;
+                    }
+                }
+
+                function controlFromSlider(fromSlider, toSlider, fromInput) {
+                  const [from, to] = getParsed(fromSlider, toSlider);
+                  fillSlider(fromSlider, toSlider, '#C6C6C6', '#408cfc', toSlider);
+                  if (from > to) {
+                    fromSlider.value = to;
+                    fromInput.value = to;
+                  } else {
+                    fromInput.value = from;
+                  }
+                }
+
+                function controlToSlider(fromSlider, toSlider, toInput) {
+                  const [from, to] = getParsed(fromSlider, toSlider);
+                  fillSlider(fromSlider, toSlider, '#C6C6C6', '#408cfc', toSlider);
+                  setToggleAccessible(toSlider);
+                  if (from <= to) {
+                    toSlider.value = to;
+                    toInput.value = to;
+                  } else {
+                    toInput.value = from;
+                    toSlider.value = from;
+                  }
+                }
+
+                function getParsed(currentFrom, currentTo) {
+                  const from = parseInt(currentFrom.value, 10);
+                  const to = parseInt(currentTo.value, 10);
+                  return [from, to];
+                }
+
+                function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+                    const rangeDistance = to.max-to.min;
+                    const fromPosition = from.value - to.min;
+                    const toPosition = to.value - to.min;
+                    controlSlider.style.background = `linear-gradient(
+                      to right,
+                      ${sliderColor} 0%,
+                      ${sliderColor} ${(fromPosition)/(rangeDistance)*100}%,
+                      ${rangeColor} ${((fromPosition)/(rangeDistance))*100}%,
+                      ${rangeColor} ${(toPosition)/(rangeDistance)*100}%,
+                      ${sliderColor} ${(toPosition)/(rangeDistance)*100}%,
+                      ${sliderColor} 100%)`;
+                }
+
+                function setToggleAccessible(currentTarget) {
+                  const toSlider = document.querySelector('#toSlider');
+                  if (Number(currentTarget.value) <= 0 ) {
+                    toSlider.style.zIndex = 2;
+                  } else {
+                    toSlider.style.zIndex = 0;
+                  }
+                }
+
+                const fromSlider = document.querySelector('#fromSlider');
+                const toSlider = document.querySelector('#toSlider');
+                const fromInput = document.querySelector('#fromInput');
+                const toInput = document.querySelector('#toInput');
+                fillSlider(fromSlider, toSlider, '#C6C6C6', '#408cfc', toSlider);
+                setToggleAccessible(toSlider);
+
+                fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+                toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+                fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+                toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
+
+            </script>
         </main>
     </div>
 </body>

@@ -18,19 +18,16 @@
             <hr class="my-4">
             <h2 class="display-6">API Response</h2>
             <hr class="my-4">
-            <h3>Keywords</h3>
+            <h3>Summary</h3>
             <br>
-            <ul>
-            {% for keyword in result.keywords %}
-                <li>{{ keyword[0] }} <span style="color: grey;">({{ keyword[1] }})</span></li>
-            {% endfor %}
-            </ul>
+            <p style="color: #444;">{{ result.summary_text }}</p>
             <hr class="my-4">
             <h3>Input</h3>
             <br>
+            <p><strong>Summary Length:</strong> {{ from_input }} <strong>to</strong> {{ to_input }}</p>
             <p><strong>Title:</strong> {{ title }}</p>
             <p><strong>Input Type:</strong> {{ source_type }}</p>
-            <p><strong>Input Text:</strong> {{ result.input_text|truncate(length=400, killwords=False, end='...') }}</p>
+            <p><strong>Input Text:</strong> {{ result.input_text|truncate(length=700, killwords=False, end='...') }}</p>
             <hr class="my-4">
             <br>
             <a href="/">Go Back</a>

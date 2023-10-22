@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
-from keybert import KeyBERT
+from transformers import pipeline
 
 app = Flask(__name__)
-kw_model = KeyBERT()
+summarizer_pipeline = pipeline("summarization", model="facebook/bart-large-cnn")
+MAX_LENGTH = 4000 # apparent maximum length of acceptable input
 
 @app.route('/process', methods=['POST'])
 def process_text():
@@ -11,16 +12,18 @@ def process_text():
         data = request.get_json()
         input_text = data.get('text', '')
 
+        min_length_input = int(data.get('from_input', 100))
+        print(f"{min_length_input=}")
+        max_length_input = int(data.get('to_input', 300))
+        print(f"{max_length_input=}")
+
         # Perform some processing on the input text (you can replace this with your actual processing logic)
         #processed_text = input_text.upper()
-        keywords = kw_model.extract_keywords(input_text, keyphrase_ngram_range=(1, 2), stop_words="english")
-        #keywords = [f"{kw[0]} ({kw[1]})" for  kw in keywords]
+        response = summarizer_pipeline(input_text[:MAX_LENGTH], max_length=max_length_input, min_length=min_length_input, do_sample=False)
+        response = response[0] # contains dict entry 'summary_text'
 
-        # Create a response JSON
-        response = {
-            'input_text': input_text,
-            'keywords': keywords
-        }
+        # Add input to the response JSON
+        response['input_text'] = input_text
 
         return jsonify(response), 200
 

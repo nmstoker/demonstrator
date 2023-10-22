@@ -20,9 +20,9 @@ python app.py
 
 - initial config
 
-conda create -n demonstrator_api python=3.10
+conda create -n demonstrator_api_summariser python=3.10
 
-conda activate demonstrator_api
+conda activate demonstrator_api_summariser
 
 pip install Flask
 
@@ -34,4 +34,6 @@ http://127.0.0.1:5001/process
 
 - now we'll adapt it to do something useful with the API
 
-pip install keybert
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+
+conda install -c huggingface transformers

@@ -12,6 +12,9 @@ def index():
             url = request.form['url']
             extracted_data = scrape_url(url)
             source_type = "Web page"
+        elif 'freetext' in request.form and len(request.form['freetext'].strip()) > 0:
+            extracted_data = [request.form['freetext'],"No title (submitted as free text)"]
+            source_type = "Free text"
         elif 'file' in request.files:
             file = request.files['file']
             extracted_data = extract_text_from_pdf(file)
@@ -21,10 +24,18 @@ def index():
         
         extracted_text = extracted_data[0]
         title = extracted_data[1]
+
+        # Get range for summary
+        if 'fromInput' in request.form and len(request.form['fromInput'].strip()) > 0:
+            from_input = request.form['fromInput']
+
+        if 'toInput' in request.form and len(request.form['toInput'].strip()) > 0:
+            to_input = request.form['toInput']
+
         # Call the external API
-        result = call_external_api(extracted_text)
+        result = call_external_api(extracted_text, from_input, to_input)
         
-        return render_template('result.html', result=result, source_type=source_type, title=title)
+        return render_template('result.html', result=result, source_type=source_type, title=title, from_input=from_input, to_input=to_input)
     return render_template('index.html')
 
 def scrape_url(url):
@@ -43,10 +54,10 @@ def extract_text_from_pdf(file):
         title = file.filename
     return text, title
 
-def call_external_api(text):
+def call_external_api(text, from_input, to_input):
     # Placeholder for calling the external API.
     hdr = {"Content-Type": "application/json"}
-    response = requests.post('http://127.0.0.1:5001/process', json={"text": text}, headers=hdr)
+    response = requests.post('http://127.0.0.1:5001/process', json={"text": text, "from_input":from_input, "to_input":to_input}, headers=hdr)
 
     return response.json()
 
